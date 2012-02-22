@@ -1,0 +1,162 @@
+#!/usr/bin/perl
+#
+# Generate EIA sequences
+
+# R = d * 10**(i/N)
+# d is decade (1,10,100,1k...)
+# N is tol series 1%=96, .1%=192, 2%=48, 5%=24, 10%=12
+# i = 0..(N-1)
+#
+# Round to 3 figs for 1,2%,  2 figs for 5,10%
+use v5.10;
+
+my $series = 96;
+my $startD = 1;
+my $stopD  = 1E6;
+
+#my $size = "0603";
+$figs{192} = 3;
+$figs{96}  = 3;
+$figs{48}  = 3;
+$figs{24}  = 2;
+$figs{12}  = 2;
+
+printf(
+'"Value", "Tolerance", "Tempco", "Manufacturer", "Manufacturer P/N", "Supplier1", "Supplier Part Number 1", "ComponentLink1Description", "ComponentLink1URL", "Library Ref", "Library Path", "Footprint Ref", "Footprint Path", "Description"'
+);
+print("\n");
+
+foreach $size ( "0402", "0603", "0805" ) {
+  for ( my $d = 1 ; $d <= 1E6 ; $d *= 10 ) {
+    for ( my $i = 0 ; $i < $series ; $i++ ) {
+      my $val = $d * round( 10**( $i / $series ), $figs{$series} );
+
+      #printf("%g, %s, %s\n",$val, format3($val), format3d($val));
+      output($val);
+    }
+  }
+}
+
+sub output {
+  my $val = shift;
+
+  my $vishay;
+  my $nice = format3d($val);
+  my $digikey;
+
+  given ($size) {
+    when (/0402/) {
+      $digikey = sprintf( "541-%sLCT-ND", $nice );
+      $vishay = sprintf( "CRCW%4s%4sFKED", $size, format3($val) );
+    }
+
+    when (/0603/) {
+      $digikey = sprintf( "541-%sHCT-ND", $nice );
+      $vishay = sprintf( "CRCW%4s%4sFKEA", $size, format3($val) );
+    }
+
+    when (/0805/) {
+      $digikey = sprintf( "541-%sCCT-ND", $nice );
+      $vishay = sprintf( "CRCW%4s%4sFKEA", $size, format3($val) );
+    }
+  }
+
+  my $datasheet   = "http://www.vishay.com/docs/20035/dcrcwe3.pdf";
+  my $footprint   = "RES" . $size;
+  my $description = "Resistor SMT $size $nice ohm";
+  my $tempco      = "100ppm/C";
+  my $symbol      = "Res1";
+  my $libPath     = '.\\MF_MiscLib.schlib';
+  my $footPath    = '.\\MF_MiscLib.PcbLib';
+
+  printf(
+"\"%s\", \"1%%\", \"%s\", \"Vishay\", \"%s\", \"Digi-Key\", \"%s\", \"Datasheet\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\" \n",
+    $nice,   $tempco,  $vishay,    $digikey,  $datasheet,
+    $symbol, $libPath, $footprint, $footPath, $description
+  );
+}
+
+sub round {
+  my $val    = shift;
+  my $places = shift;
+
+  $places -= 1;
+  $val = $val * ( 10**$places );
+  $val = int( $val + 0.5 );
+  $val = $val / ( 10**$places );
+  return ($val);
+}
+
+sub format3 {
+  my $val = shift;
+  my $strval = sprintf( "%#3.3g", $val );
+
+  if ( $val < 1000 ) {
+    $strval =~ s/\./R/;
+    return $strval;
+  }
+
+  if ( $val < 1E6 ) {
+    $val = $val / 1000;
+    $strval = sprintf( "%#3.3g", $val );
+    $strval =~ s/\./K/;
+    return ($strval);
+  }
+
+  if ( $val < 1E12 ) {
+    $val = $val / 1E6;
+    $strval = sprintf( "%#3.3g", $val );
+    $strval =~ s/\./M/;
+    return ($strval);
+  }
+}
+
+sub format3d {
+  my $val = shift;
+  my $strval = sprintf( "%#3.3g", $val );
+
+  if ( $val < 1000 ) {
+    $strval =~ s/\.$//;
+    return $strval;
+  }
+
+  if ( $val < 1E6 ) {
+    $val = $val / 1000;
+    $strval = sprintf( "%#3.3g", $val );
+    $strval =~ s/\.$//;
+    $strval .= "K";
+    return ($strval);
+  }
+
+  if ( $val < 1E12 ) {
+    $val = $val / 1E6;
+    $strval = sprintf( "%#3.3g", $val );
+    $strval =~ s/\.$//;
+    $strval .= "M";
+    return ($strval);
+  }
+}
+
+sub format2 {
+  my $val = shift;
+  my $strval = sprintf( "%#2.2g", $val );
+
+  if ( $val < 1000 ) {
+    $strval =~ s/\./R/;
+    return $strval;
+  }
+
+  if ( $val < 1E6 ) {
+    $val = $val / 1000;
+    $strval = sprintf( "%#2.2g", $val );
+    $strval =~ s/\./K/;
+    return ($strval);
+  }
+
+  if ( $val < 1E12 ) {
+    $val = $val / 1E6;
+    $strval = sprintf( "%#2.2g", $val );
+    $strval =~ s/\./M/;
+    return ($strval);
+  }
+}

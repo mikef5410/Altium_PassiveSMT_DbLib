@@ -1,0 +1,64 @@
+#!/usr/bin/perl
+#
+
+use v5.10;
+use DBI;
+
+my $dbh = DBI->connect( "dbi:SQLite:dbname=PassiveSMT.db", "", "" );
+
+my $pkg = "";
+
+my $sth = $dbh->prepare(
+"insert into Inductors (Value, Tolerance, Q, TestFreq, Manufacturer, 'Manufacturer PN',
+                      'Library Ref', 'Library Path', 'Footprint Ref', 'Footprint Path', ComponentLink1Description,
+                      ComponentLink1URL, SRF, DCR, Current, Description, PkgCode) VALUES
+                     (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+);
+
+my $mfg     = "TDK";
+my $lpath   = "PassiveSMT.schlib";
+my $lref    = "Inductor1";
+my $fpath   = "PassiveSMT.PcbLib";
+my $url     = "http://www.tdk.co.jp/tefe02/e521_mlg.pdf";
+my $linkd   = "Datasheet";
+my $pkgcode = "";
+
+open( IN, "TDK_MLG_inductors" );
+while (<IN>) {
+  $_ = stripwhite($_);
+  next if (/^\s*$/);
+  if (/^\*\*([0-9]+)/) {
+    $pkgcode = $1;
+    $pkg     = "IND" . $pkgcode;
+    next;
+  }
+
+  my ( $ind, $tol, $q, $qf, $srfmin, $srftyp, $dcrmin, $dcrtyp, $maxcur, $mpn )
+    = split(" ");
+  $ind    .= "nH";
+  $qf     .= "MHz";
+  $srfmin .= "GHz";
+  $srftyp .= "GHz";
+  $maxcur .= "mA";
+  $dcrmin .= "oh";
+  $dcrtyp .= "oh";
+
+  my $desc = "IND $ind $tol $maxcur $dcrtyp $pkgcode";
+
+  printf("$ind, $pkg, $tol, $q, $qf, $maxcur, $srftyp, $dcrtyp, $mpn, $desc\n");
+  $sth->execute(
+    $ind,    $tol,    $q,      $qf,    $mfg,   $mpn,
+    $lref,   $lpath,  $pkg,    $fpath, $linkd, $url,
+    $srftyp, $dcrtyp, $maxcur, $desc,  $pkgcode
+  );
+}
+
+sub stripwhite {
+  my $in = $_;
+
+  $in =~ s/\#.*$//;
+  $in =~ s/^\s+//;
+  $in =~ s/\s$//;
+  return ($in);
+}
+

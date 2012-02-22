@@ -1,0 +1,66 @@
+#!/usr/bin/perl
+#
+
+use v5.10;
+use DBI;
+
+my $dbh = DBI->connect( "dbi:SQLite:dbname=PassiveSMT.db", "", "" );
+
+my $pkg = "";
+
+my $sth = $dbh->prepare(
+"insert into Capacitors_Nonpol (Value, Tolerance, Dielectric, Voltage, Manufacturer, 'Manufacturer PN',
+     'Library Ref', 'Library Path', 'Footprint Ref', 'Footprint Path', ComponentLink1Description,
+     ComponentLink1URL, MaxComponentHeight, Description, PkgCode ) VALUES
+     (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+);
+
+my $mfg     = "TDK";
+my $lpath   = "PassiveSMT.schlib";
+my $lref    = "Capacitor_np";
+my $fpath   = "PassiveSMT.PcbLib";
+my $url     = "http://www.tdk.com/pdf/general_B11.pdf";
+my $linkd   = "Datasheet";
+my $pkgcode = "";
+
+open( IN, "TDK_MLC_caps" );
+while (<IN>) {
+  $_ = stripwhite($_);
+  next if (/^\s*$/);
+  if (/^\*\*([0-9]+)/) {
+    $pkgcode = $1;
+    $pkg     = "CAP" . $pkgcode;
+    next;
+  }
+
+  my ( $mpn, $die, $volt, $cap, $tol, $height, $htol ) = split(" ");
+  $cap =~ s/,//g;
+  if ( $cap >= 10000 ) {
+    $cap = $cap / 1E6;
+    $cap = $cap . "uF";
+  } else {
+    $cap = $cap . "pF";
+  }
+
+  $htol =~ s,\+/\-,,;
+  $height += $htol;
+  $height .= "mm";
+
+  my $desc = "CAP $cap $tol $volt $die $pkgcode";
+
+  printf("$cap, $pkg, $tol, $die, $volt, $height, $mpn, $desc\n");
+  $sth->execute(
+    $cap, $tol,   $die,   $volt, $mfg,    $mpn,  $lref, $lpath,
+    $pkg, $fpath, $linkd, $url,  $height, $desc, $pkgcode
+  );
+}
+
+sub stripwhite {
+  my $in = $_;
+
+  $in =~ s/\#.*$//;
+  $in =~ s/^\s+//;
+  $in =~ s/\s$//;
+  return ($in);
+}
+

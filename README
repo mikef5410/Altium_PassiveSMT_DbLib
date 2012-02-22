@@ -1,0 +1,24 @@
+This library uses SQLite3, so you need to install a "data source" for SQLite3
+before you can use it. You can get it from: http://www.ch-werner.de/sqliteodbc/
+
+In particular, you want: http://www.ch-werner.de/sqliteodbc/sqliteodbc.exe
+
+Install it, and re-start Altium.
+
+The connection to the SQLite3 database is done in PassiveSMT.DbLib ... you may
+need to edit the ConnectionString ... it should read:
+
+ConnectionString=DSN=SQLite3 Datasource;Database=Z:\root\projects\MF_CAD\PassiveSMT\PassiveSMT.db
+
+Note the full path to the Sqlite database file. You'll probably need to change
+this.
+
+Right now, we've got all 1% values of 0402, 0603, and 0805 TDK resistors with
+Digi-Key ordering info.
+
+Then, there's a whole bunch of TDK MLC capacitors ... 0201 -> 2220's
+
+Then, there's a whole bunch of TDK Ceramic inductors ... 0201, 0402, and 0603
+
+Then, there's the whole T491 series of Kemet surface mount tantalums.
+

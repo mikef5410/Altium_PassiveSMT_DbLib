@@ -1,0 +1,75 @@
+#!/usr/bin/perl
+#
+
+use v5.10;
+use DBI;
+
+my $dbh = DBI->connect( "dbi:SQLite:dbname=PassiveSMT.db", "", "" );
+
+my $pkg = "";
+
+my $sth = $dbh->prepare(
+"insert into Capacitors_Polarized (Value, Tolerance, Dielectric, Voltage, Manufacturer, 'Manufacturer PN',
+                      'Library Ref', 'Library Path', 'Footprint Ref', 'Footprint Path', ComponentLink1Description,
+                      ComponentLink1URL, Description, PkgCode, DF, ESR ) VALUES
+                     (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+);
+
+my $mfg   = "Kemet";
+my $lpath = "PassiveSMT.schlib";
+my $lref  = "Capacitor_pol";
+my $fpath = "PassiveSMT.PcbLib";
+my $url =
+"http://www.kemet.com/kemet/web/homepage/kechome.nsf/vapubfiles/KEM_TC101_STD.pdf/$file/KEM_TC101_STD.pdf";
+my $linkd   = "Datasheet";
+my $pkgcode = "";
+
+open( IN, "Kemet_T491_Tant" );
+while (<IN>) {
+  $_ = stripwhite($_);
+  next if (/^\s*$/);
+
+  my ( $volt, $cap, $pkg, $mpn, $dcl, $df, $esr, $rip, $moist ) = split(" ");
+
+  $volt .= "V";
+  $cap  .= "uF";
+  $df   .= "%";
+  $esr  .= "oh";
+
+  my ( $kempkg, $eiapkg ) = split( "/", $pkg );
+  my $fprint = "KEMET_" . $kempkg;
+  $pkgcode = $eiapkg;
+
+  my @tollist = ( 10, 20 );
+  if ( $mpn =~ /\(M\)/ ) {
+    @tollist = (20);
+  }
+
+  $mpn =~ s/\(M\)/(1)/;
+  foreach my $tol (@tollist) {
+    $nmpn = $mpn;
+    if ( $tol == 10 ) { $tollet = "K"; }
+    if ( $tol == 20 ) { $tollet = "M"; }
+    $nmpn =~ s/\(1\)/$tollet/;
+    $tol = "+/-" . $tol . "%";
+
+    my $desc = "CAP $cap $tol $volt TANT $pkgcode";
+    printf(
+      "$cap, $fprint, $eiapkg, $tol, $die, $volt, $df, $esr, $nmpn, $desc\n");
+    $sth->execute(
+      $cap,  $tol,     "Tantalum", $volt,  $mfg,   $nmpn,
+      $lref, $lpath,   $fprint,    $fpath, $linkd, $url,
+      $desc, $pkgcode, $df,        $esr
+    );
+  }
+}
+
+sub stripwhite {
+  my $in = $_;
+
+  $in =~ s/\#.*$//;
+  $in =~ s/^\s+//;
+  $in =~ s/\s$//;
+  return ($in);
+}
+

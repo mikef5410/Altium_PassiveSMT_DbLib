@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+
+rm -f PassiveSMT.db
+sqlite3 PassiveSMT.db < schema
+
+echo resistors 0201...
+time rcalc0201-sqlite
+echo resistors 0402-1206...
+time rcalc-sqlite
+echo non-polar caps...
+time loadcaps
+echo inductors...
+time loadind
+echo tantalums...
+time loadkemet

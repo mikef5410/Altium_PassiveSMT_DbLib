@@ -1,0 +1,184 @@
+#!/usr/bin/perl
+#
+# Generate EIA sequences
+
+# R = d * 10**(i/N)
+# d is decade (1,10,100,1k...)
+# N is tol series 1%=96, .1%=192, 2%=48, 5%=24, 10%=12
+# i = 0..(N-1)
+#
+# Round to 3 figs for 1,2%,  2 figs for 5,10%
+use v5.10;
+use DBI;
+
+my $dbh    = DBI->connect( "dbi:SQLite:dbname=PassiveSMT.db", "", "" );
+my $series = 96;
+my $startD = 1;
+my $stopD  = 1E6;
+
+#my $size = "0603";
+$figs{192} = 3;
+$figs{96}  = 3;
+$figs{48}  = 3;
+$figs{24}  = 2;
+$figs{12}  = 2;
+
+foreach $size ("0201") {
+  output(0.0);
+  for ( my $d = 1 ; $d <= 1E5 ; $d *= 10 ) {
+    for ( my $i = 0 ; $i < $series ; $i++ ) {
+      my $val = $d * round( 10**( $i / $series ), $figs{$series} );
+
+      #printf("%g, %s, %s\n",$val, format3($val), format3d($val));
+      output($val);
+    }
+  }
+}
+
+{
+  my $sth = undef;
+
+  sub output {
+    my $val = shift;
+
+    my $vishay;
+    my $nice = format3d($val);
+    my $digikey;
+    my $pow;
+    my $pkgcode;
+    my $datasheet;
+
+    given ($size) {
+      when (/0201/) {
+        $digikey = sprintf( "541-%sAABCT-ND", $nice );
+        $vishay = sprintf( "CRCW%4s%4sFKED", $size, format3($val) );
+        $pow       = "1/20W";
+        $pkgcode   = "0201";
+        $datasheet = "http://www.vishay.com/docs/20052/crcw0201e3.pdf";
+        if ( $val == 0 ) {
+          $digikey = "541-0.0AGCT-ND";
+          $vishay  = "CRCW02010000Z0ED";
+        }
+      }
+    }
+
+    my $footprint   = "RES" . $size;
+    my $description = "Resistor SMT $size $nice 1% ohm";
+    my $tempco      = "100ppm/C";
+    my $symbol      = "Resistor1";
+    my $libPath     = 'PassiveSMT.schlib';
+    my $footPath    = 'PassiveSMT.PcbLib';
+
+    printf(
+"%s, 1%%, %s, Vishay, %s, Digi-Key, %s, Datasheet, %s, %s, %s, %s, %s, %s \n",
+      $nice,   $tempco,  $vishay,    $digikey,  $datasheet,
+      $symbol, $libPath, $footprint, $footPath, $description
+    );
+
+    if ( !defined($sth) ) {
+      $sth = $dbh->prepare(
+"insert into Resistors (Value, Tolerance, Tempco, Manufacturer, 'Manufacturer PN', 'Supplier 1', 'Supplier Part Number 1',
+        ComponentLink1Description, ComponentLink1URL, 'Library Ref', 'Library Path', 'Footprint Ref', 'Footprint Path', Description, Power, PkgCode) VALUES
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+      );
+    }
+
+    $sth->execute(
+      $nice,      "1%",         $tempco,  "Vishay",
+      $vishay,    "Digi-Key",   $digikey, "Datasheet",
+      $datasheet, $symbol,      $libPath, $footprint,
+      $footPath,  $description, $pow,     $pkgcode
+    );
+    return;
+  }
+
+}
+
+sub round {
+  my $val    = shift;
+  my $places = shift;
+
+  $places -= 1;
+  $val = $val * ( 10**$places );
+  $val = int( $val + 0.5 );
+  $val = $val / ( 10**$places );
+  return ($val);
+}
+
+sub format3 {
+  my $val = shift;
+  my $strval = sprintf( "%#3.3g", $val );
+
+  if ( $val == 0 ) {
+    return ("0");
+  }
+
+  if ( $val < 1000 ) {
+    $strval =~ s/\./R/;
+    return $strval;
+  }
+
+  if ( $val < 1E6 ) {
+    $val = $val / 1000;
+    $strval = sprintf( "%#3.3g", $val );
+    $strval =~ s/\./K/;
+    return ($strval);
+  }
+
+  if ( $val < 1E12 ) {
+    $val = $val / 1E6;
+    $strval = sprintf( "%#3.3g", $val );
+    $strval =~ s/\./M/;
+    return ($strval);
+  }
+}
+
+sub format3d {
+  my $val = shift;
+  my $strval = sprintf( "%#3.3g", $val );
+
+  if ( $val < 1000 ) {
+    $strval =~ s/\.$//;
+    return $strval;
+  }
+
+  if ( $val < 1E6 ) {
+    $val = $val / 1000;
+    $strval = sprintf( "%#3.3g", $val );
+    $strval =~ s/\.$//;
+    $strval .= "K";
+    return ($strval);
+  }
+
+  if ( $val < 1E12 ) {
+    $val = $val / 1E6;
+    $strval = sprintf( "%#3.3g", $val );
+    $strval =~ s/\.$//;
+    $strval .= "M";
+    return ($strval);
+  }
+}
+
+sub format2 {
+  my $val = shift;
+  my $strval = sprintf( "%#2.2g", $val );
+
+  if ( $val < 1000 ) {
+    $strval =~ s/\./R/;
+    return $strval;
+  }
+
+  if ( $val < 1E6 ) {
+    $val = $val / 1000;
+    $strval = sprintf( "%#2.2g", $val );
+    $strval =~ s/\./K/;
+    return ($strval);
+  }
+
+  if ( $val < 1E12 ) {
+    $val = $val / 1E6;
+    $strval = sprintf( "%#2.2g", $val );
+    $strval =~ s/\./M/;
+    return ($strval);
+  }
+}
