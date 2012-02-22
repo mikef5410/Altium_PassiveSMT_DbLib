@@ -13,12 +13,18 @@ ConnectionString=DSN=SQLite3 Datasource;Database=Z:\root\projects\MF_CAD\Passive
 Note the full path to the Sqlite database file. You'll probably need to change
 this.
 
-Right now, we've got all 1% values of 0402, 0603, and 0805 TDK resistors with
-Digi-Key ordering info.
+Next, add the DbLib file to your project or install it as a library.
+
+Right now, we've got all 1% values of 0201, 0402, 0603, 0805, and 1206 TDK
+resistors with Digi-Key ordering info.
 
 Then, there's a whole bunch of TDK MLC capacitors ... 0201 -> 2220's
 
 Then, there's a whole bunch of TDK Ceramic inductors ... 0201, 0402, and 0603
 
 Then, there's the whole T491 series of Kemet surface mount tantalums.
+
+The schema uses fixed size varchars because for some reason text fields result
+in all data being "WideMemo". Dunno why. Guess it's a windows thing. The
+Scripts directory has all the code I used to load up the tables.
 
