@@ -34,7 +34,7 @@ while (<DATA>) {
   next if (/^\s*$/);
 
   $pkgcode="SRP1270";
-  $pkg="SRP1270";
+  $pkg="BOURNS_SRP1270";
   my ( $mpn, $ind, $maxcur, $satcur, $dcrtyp, $srftyp  )
     = split(" ");
   $ind    .= "uH";
