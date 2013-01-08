@@ -1,0 +1,86 @@
+#!/usr/bin/perl
+#
+
+use v5.10;
+use DBI;
+
+my $dbh = DBI->connect( "dbi:SQLite:dbname=PassiveSMT.db", "", "" );
+
+my $pkg = "";
+
+my $sth = $dbh->prepare(
+"insert into Inductors (Value, Tolerance, Q, TestFreq, Manufacturer, 'Manufacturer PN',
+                      'Library Ref', 'Library Path', 'Footprint Ref', 'Footprint Path', ComponentLink1Description,
+                      ComponentLink1URL, SRF, DCR, Current, Description, PkgCode, 'Supplier 1' , 'Supplier Part Number 1') VALUES
+                     (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+);
+
+my $mfg     = "Bourns";
+my $lpath   = "PassiveSMT.schlib";
+my $lref    = "Inductor1";
+my $fpath   = "PassiveSMT.PcbLib";
+my $url     = "http://www.bourns.com/data/global/pdfs/SRP1270.pdf";
+my $linkd   = "Datasheet";
+my $pkgcode = "SRP1270";
+my $tol = "+/-20%";
+my $q="-";
+my $qf="-";
+my $supplier="Digi-Key";
+my $suppPN="";
+
+
+while (<DATA>) {
+  $_ = stripwhite($_);
+  next if (/^\s*$/);
+
+  $pkgcode="SRP1270";
+  $pkg="SRP1270";
+  my ( $mpn, $ind, $maxcur, $satcur, $dcrtyp, $srftyp  )
+    = split(" ");
+  $ind    .= "uH";
+  $srftyp .= "MHz";
+  $maxcur .= "A";
+  $dcrtyp .= "oh";
+  $suppPN = $mpn . "CT-ND";
+
+  my $desc = "IND $ind $tol $maxcur $dcrtyp $pkgcode";
+
+  printf("$ind, $pkg, $tol, $q, $qf, $maxcur, $srftyp, $dcrtyp, $mpn, $desc, $supplier, $suppPN\n");
+  $sth->execute(
+    $ind,    $tol,    $q,      $qf,    $mfg,   $mpn,
+    $lref,   $lpath,  $pkg,    $fpath, $linkd, $url,
+    $srftyp, $dcrtyp, $maxcur, $desc,  $pkgcode,
+    $supplier, $suppPN
+  );
+}
+
+sub stripwhite {
+  my $in = $_;
+
+  $in =~ s/\#.*$//;
+  $in =~ s/^\s+//;
+  $in =~ s/\s$//;
+  return ($in);
+}
+
+
+__DATA__
+#Bourns Part No.
+#Inductance L (μH) ±20 %
+#I rms (A)
+#I sat (A)
+#DCR (mΩ) Max.
+#SRF (MHz) Typ.
+SRP1270-R32M 0.32 46 65 0.9 95
+SRP1270-R47M 0.47 41 65 1.2 85
+SRP1270-R68M 0.68 35 60 1.6 65
+SRP1270-1R0M 1.0 32 50 2.1 45
+SRP1270-1R5M 1.5 27 48 2.6 31
+SRP1270-1R8M 1.8 24 41 3.2 31
+SRP1270-2R2M 2.2 22 40 4.2 25
+SRP1270-3R3M 3.3 18 35 6.6 20
+SRP1270-4R7M 4.7 15 30 11.2 15
+SRP1270-5R6M 5.6 14 26.5 10.0 13
+SRP1270-6R8M 6.8 12 21 14.0 12
+SRP1270-8R2M 8.2 11 17 15.5 11
+SRP1270-100M 10.0 10 16 16.8 10
