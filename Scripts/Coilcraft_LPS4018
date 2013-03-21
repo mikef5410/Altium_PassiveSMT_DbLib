@@ -1,0 +1,105 @@
+#!/usr/bin/perl
+#
+
+use v5.10;
+use DBI;
+
+my $dbh = DBI->connect( "dbi:SQLite:dbname=PassiveSMT.db", "", "" );
+
+my $pkg = "";
+
+my $sth = $dbh->prepare(
+"insert into Inductors (Value, Tolerance, Q, TestFreq, Manufacturer, 'Manufacturer PN',
+                      'Library Ref', 'Library Path', 'Footprint Ref', 'Footprint Path', ComponentLink1Description,
+                      ComponentLink1URL, SRF, DCR, Current, Description, PkgCode, 'Supplier 1' , 'Supplier Part Number 1') VALUES
+                     (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+);
+
+my $mfg     = "Coilcraft";
+my $lpath   = "PassiveSMT.schlib";
+my $lref    = "Inductor1";
+my $fpath   = "PassiveSMT.PcbLib";
+my $url     = "http://www.coilcraft.com/pdfs/lps4018.pdf";
+my $linkd   = "Datasheet";
+my $pkgcode = "LPS4018";
+my $tol = "+/-20%";
+my $q="-";
+my $qf="-";
+my $supplier="Coilcraft";
+my $suppPN="";
+
+
+while (<DATA>) {
+  $_ = stripwhite($_);
+  next if (/^\s*$/);
+
+  $pkgcode="LPS4018";
+  $pkg="COILCRAFT_LPS4018";
+  my ( $mpn, $ind, $tol, $dcrtyp, $srftyp, $satcur10, $satcur, $satcur30,  $maxcur, $maxcur40  )
+    = split(" ");
+  $ind    .= "uH";
+  $srftyp .= "MHz";
+  $maxcur .= "A";
+  $dcrtyp .= "oh";
+  $suppPN = $mpn;
+
+  my $desc = "IND $ind $tol $maxcur $dcrtyp $pkgcode";
+
+  printf("$ind, $pkg, $tol, $q, $qf, $maxcur, $srftyp, $dcrtyp, $mpn, $desc, $supplier, $suppPN\n");
+  $sth->execute(
+    $ind,    $tol,    $q,      $qf,    $mfg,   $mpn,
+    $lref,   $lpath,  $pkg,    $fpath, $linkd, $url,
+    $srftyp, $dcrtyp, $maxcur, $desc,  $pkgcode,
+    $supplier, $suppPN
+  );
+}
+
+sub stripwhite {
+  my $in = $_;
+
+  $in =~ s/\#.*$//;
+  $in =~ s/^\s+//;
+  $in =~ s/\s$//;
+  return ($in);
+}
+
+
+__DATA__
+#Coilcraft Part No.
+#Inductance L (μH)
+#Tolerance
+#DCR (Ω)
+#SRF (MHz)
+#I sat (10% drop A)
+#I sat (20% drop A)
+#I sat (30% drop A)
+#I rms (20C rise A)
+#I rms (40C rise A)
+LPS4018-561MLB 	0.56 +/-20% 	0.033 	250 	4.8 	5.2 	5.3 	1.9 	2.8
+LPS4018-102NLB 	1.0 +/-30% 	0.042 	180 	3.8 	3.9 	4.0 	1.8 	2.5
+LPS4018-222MLB 	2.2 +/-20% 	0.070 	90 	2.7 	2.8 	2.9 	1.5 	2.0
+LPS4018-332MLB 	3.3 +/-20% 	0.080 	75 	1.9 	2.0 	2.0 	1.4 	1.9
+LPS4018-472MLB 	4.7 +/-20% 	0.125 	65 	1.8 	1.9 	1.9 	1.3 	1.8
+LPS4018-682MLB 	6.8 +/-20% 	0.150 	50 	1.2 	1.3 	1.3 	1.0 	1.5
+LPS4018-103MLB 	10 +/-20% 	0.200 	40 	1.1 	1.2 	1.3 	0.90 	1.25
+LPS4018-153MLB 	15 +/-20% 	0.260 	32 	0.86 	0.91 	0.94 	0.80 	1.12
+LPS4018-183MLB 	18 +/-20% 	0.270 	27 	0.78 	0.83 	0.85 	0.70 	1.00
+LPS4018-223MLB 	22 +/-20% 	0.360 	26 	0.74 	0.80 	0.83 	0.65 	0.90
+LPS4018-333MLB 	33 +/-20% 	0.420 	20 	0.58 	0.64 	0.68 	0.55 	0.80
+LPS4018-473MLB 	47 +/-20% 	0.650 	16 	0.51 	0.55 	0.56 	0.45 	0.68
+LPS4018-683MLB 	68 +/-20% 	0.950 	13 	0.41 	0.45 	0.46 	0.40 	0.56
+LPS4018-104MLB 	100 +/-20% 	1.40 	10 	0.34 	0.36 	0.37 	0.35 	0.50
+LPS4018-124MLB 	120 +/-20% 	1.60 	9.0 	0.31 	0.33 	0.34 	0.30 	0.45
+LPS4018-154MLB 	150 +/-20% 	2.00 	8.0 	0.27 	0.29 	0.30 	0.28 	0.40
+LPS4018-184MLB 	180 +/-20% 	2.50 	7.5 	0.24 	0.26 	0.27 	0.26 	0.36
+LPS4018-224MLB 	220 +/-20% 	3.70 	6.5 	0.21 	0.225 	0.235 	0.20 	0.30
+LPS4018-334MLB 	330 +/-20% 	5.90 	5.5 	0.18 	0.19 	0.20 	0.17 	0.23
+LPS4018-474MLB 	470 +/-20% 	7.80 	4.5 	0.14 	0.16 	0.17 	0.15 	0.20
+LPS4018-564MLB 	560 +/-20% 	10.0 	4.0 	0.13 	0.14 	0.15 	0.14 	0.18
+LPS4018-684MLB 	680 +/-20% 	11.5 	3.5 	0.12 	0.13 	0.14 	0.12 	0.16
+LPS4018-824MLB 	820 +/-20% 	14.0 	2.9 	0.11 	0.12 	0.13 	0.10 	0.14
+LPS4018-105MLB 	1000 +/-20% 	18.0 	2.8 	0.10 	0.11 	0.11 	0.098 	0.125
+LPS4018-155MLB 	1500 +/-20% 	25.0 	2.4 	0.095 	0.10 	0.105 	0.080 	0.110
+LPS4018-185MLB 	1800 +/-20% 	31.5 	2.3 	0.090 	0.095 	0.100 	0.070 	0.095
+LPS4018-225MLB 	2200 +/-20% 	32.5 	2.1 	0.088 	0.094 	0.100 	0.070 	0.090
+LPS4018-335MLB 	3300 +/-20% 	48.0 	1.6 	0.082 	0.092 	0.094 	0.055 	0.075
