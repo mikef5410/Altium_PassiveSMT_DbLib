@@ -1,11 +1,11 @@
 [OutputDatabaseLinkFile]
 Version=1.1
 [DatabaseLinks]
-ConnectionString=DSN=SQLite3 Datasource;Database=Z:\root\projects\MF_CAD\PassiveSMT\PassiveSMT.db
+ConnectionString=FILE NAME=Z:\root\projects\MF_CAD\PassiveSMT\PassiveSMT.dsn
 AddMode=3
 RemoveMode=1
 UpdateMode=2
-ViewMode=1
+ViewMode=0
 LeftQuote=[
 RightQuote=]
 QuoteTableNames=1
@@ -18,7 +18,8 @@ TopPanelCollapsed=0
 LibrarySearchPath=
 OrcadMultiValueDelimiter=,
 SearchSubDirectories=0
-LastFocusedTable=Resistors
+SchemaName=
+LastFocusedTable=Capacitors_Nonpol
 [Table1]
 SchemaName=
 TableName=Capacitors_Nonpol
@@ -31,24 +32,18 @@ TableName=Capacitors_Polarized
 Enabled=True
 UserWhere=0
 UserWhereText=
-BrowserOrder_Sorting=
-BrowserOrder_Grouping=
-BrowserOrder_Visible=ID0=34|Voltage0=59|Library Ref0=74|Library Path0=98|Footprint Ref0=84|Footprint Path0=104|PCB3D Ref0=78|PCB3D Path0=83|Description0=204|PartNumber0=79|Value0=50|Tolerance0=71|Dielectric0=67|Tempco0=62|DF0=37|ESR0=45|Manufacturer0=86|Manufacturer PN0=104|Supplier 10=70|Supplier Part Number 10=132|Supplier 20=70|Supplier Part Number 20=132|ComponentLink1Description0=156|ComponentLink1URL0=580|ComponentLink2Description0=156|ComponentLink2URL0=125|MaxComponentHeight0=128|PkgCode0=67|PrefCode0=67
 [Table3]
 SchemaName=
 TableName=Inductors
 Enabled=True
 UserWhere=0
-UserWhereText=
+UserWhereText=[ID] = {ID}
 [Table4]
 SchemaName=
 TableName=Resistors
 Enabled=True
 UserWhere=0
 UserWhereText=
-BrowserOrder_Sorting=
-BrowserOrder_Grouping=
-BrowserOrder_Visible=ID0=34|Library Ref0=74|Library Path0=98|Footprint Ref0=84|Footprint Path0=104|PCB3D Ref0=78|PCB3D Path0=83|Description0=172|PkgCode0=67|PartNumber0=79|Value0=50|Tolerance0=71|Tempco0=62|Power0=53|Manufacturer0=86|Manufacturer PN0=120|Supplier 10=70|Supplier Part Number 10=132|Supplier 20=70|Supplier Part Number 20=132|ComponentLink1Description0=156|ComponentLink1URL0=264|ComponentLink2Description0=156|ComponentLink2URL0=125|MaxComponentHeight0=128|PrefCode0=67
 [Table5]
 SchemaName=
 TableName=sqlite_sequence
@@ -72,13 +67,13 @@ Options=FieldName=Capacitors_Nonpol.PCB3D Path|TableNameOnly=Capacitors_Nonpol|F
 [FieldMap8]
 Options=FieldName=Capacitors_Nonpol.Description|TableNameOnly=Capacitors_Nonpol|FieldNameOnly=Description|FieldType=1|ParameterName=[Description]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
 [FieldMap9]
-Options=FieldName=Capacitors_Nonpol.PkgCode|TableNameOnly=Capacitors_Nonpol|FieldNameOnly=PkgCode|FieldType=1|ParameterName=PkgCode|VisibleOnAdd=True|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap10]
 Options=FieldName=Capacitors_Polarized.ID|TableNameOnly=Capacitors_Polarized|FieldNameOnly=ID|FieldType=0|ParameterName=ID|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap11]
-Options=FieldName=Capacitors_Polarized.Voltage|TableNameOnly=Capacitors_Polarized|FieldNameOnly=Voltage|FieldType=1|ParameterName=Voltage|VisibleOnAdd=True|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap12]
+[FieldMap10]
 Options=FieldName=Capacitors_Polarized.Library Ref|TableNameOnly=Capacitors_Polarized|FieldNameOnly=Library Ref|FieldType=1|ParameterName=[Library Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap11]
+Options=FieldName=Capacitors_Polarized.PCB3D Ref|TableNameOnly=Capacitors_Polarized|FieldNameOnly=PCB3D Ref|FieldType=1|ParameterName=[PCB3D Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap12]
+Options=FieldName=Capacitors_Polarized.PCB3D Path|TableNameOnly=Capacitors_Polarized|FieldNameOnly=PCB3D Path|FieldType=1|ParameterName=[PCB3D Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
 [FieldMap13]
 Options=FieldName=Capacitors_Polarized.Library Path|TableNameOnly=Capacitors_Polarized|FieldNameOnly=Library Path|FieldType=1|ParameterName=[Library Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
 [FieldMap14]
@@ -86,44 +81,36 @@ Options=FieldName=Capacitors_Polarized.Footprint Ref|TableNameOnly=Capacitors_Po
 [FieldMap15]
 Options=FieldName=Capacitors_Polarized.Footprint Path|TableNameOnly=Capacitors_Polarized|FieldNameOnly=Footprint Path|FieldType=1|ParameterName=[Footprint Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
 [FieldMap16]
-Options=FieldName=Capacitors_Polarized.PCB3D Ref|TableNameOnly=Capacitors_Polarized|FieldNameOnly=PCB3D Ref|FieldType=1|ParameterName=[PCB3D Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap17]
-Options=FieldName=Capacitors_Polarized.PCB3D Path|TableNameOnly=Capacitors_Polarized|FieldNameOnly=PCB3D Path|FieldType=1|ParameterName=[PCB3D Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap18]
 Options=FieldName=Capacitors_Polarized.Description|TableNameOnly=Capacitors_Polarized|FieldNameOnly=Description|FieldType=1|ParameterName=[Description]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap19]
-Options=FieldName=Inductors.Library Ref|TableNameOnly=Inductors|FieldNameOnly=Library Ref|FieldType=1|ParameterName=[Library Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap20]
-Options=FieldName=Inductors.Library Path|TableNameOnly=Inductors|FieldNameOnly=Library Path|FieldType=1|ParameterName=[Library Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap21]
-Options=FieldName=Inductors.Footprint Ref|TableNameOnly=Inductors|FieldNameOnly=Footprint Ref|FieldType=1|ParameterName=[Footprint Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap22]
-Options=FieldName=Inductors.Footprint Path|TableNameOnly=Inductors|FieldNameOnly=Footprint Path|FieldType=1|ParameterName=[Footprint Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap23]
-Options=FieldName=Inductors.PCB3D Ref|TableNameOnly=Inductors|FieldNameOnly=PCB3D Ref|FieldType=1|ParameterName=[PCB3D Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap24]
-Options=FieldName=Inductors.PCB3D Path|TableNameOnly=Inductors|FieldNameOnly=PCB3D Path|FieldType=1|ParameterName=[PCB3D Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap25]
-Options=FieldName=Inductors.Description|TableNameOnly=Inductors|FieldNameOnly=Description|FieldType=1|ParameterName=[Description]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap26]
+[FieldMap17]
 Options=FieldName=Inductors.ID|TableNameOnly=Inductors|FieldNameOnly=ID|FieldType=0|ParameterName=ID|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap27]
-Options=FieldName=Inductors.PkgCode|TableNameOnly=Inductors|FieldNameOnly=PkgCode|FieldType=1|ParameterName=PkgCode|VisibleOnAdd=True|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap28]
+[FieldMap18]
+Options=FieldName=Inductors.Library Ref|TableNameOnly=Inductors|FieldNameOnly=Library Ref|FieldType=1|ParameterName=[Library Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap19]
+Options=FieldName=Inductors.PCB3D Ref|TableNameOnly=Inductors|FieldNameOnly=PCB3D Ref|FieldType=1|ParameterName=[PCB3D Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap20]
+Options=FieldName=Inductors.PCB3D Path|TableNameOnly=Inductors|FieldNameOnly=PCB3D Path|FieldType=1|ParameterName=[PCB3D Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap21]
+Options=FieldName=Inductors.Library Path|TableNameOnly=Inductors|FieldNameOnly=Library Path|FieldType=1|ParameterName=[Library Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap22]
+Options=FieldName=Inductors.Footprint Ref|TableNameOnly=Inductors|FieldNameOnly=Footprint Ref|FieldType=1|ParameterName=[Footprint Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap23]
+Options=FieldName=Inductors.Footprint Path|TableNameOnly=Inductors|FieldNameOnly=Footprint Path|FieldType=1|ParameterName=[Footprint Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap24]
+Options=FieldName=Inductors.Description|TableNameOnly=Inductors|FieldNameOnly=Description|FieldType=1|ParameterName=[Description]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap25]
 Options=FieldName=Resistors.ID|TableNameOnly=Resistors|FieldNameOnly=ID|FieldType=0|ParameterName=ID|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap29]
+[FieldMap26]
 Options=FieldName=Resistors.Library Ref|TableNameOnly=Resistors|FieldNameOnly=Library Ref|FieldType=1|ParameterName=[Library Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap30]
-Options=FieldName=Resistors.Library Path|TableNameOnly=Resistors|FieldNameOnly=Library Path|FieldType=1|ParameterName=[Library Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap31]
-Options=FieldName=Resistors.Footprint Ref|TableNameOnly=Resistors|FieldNameOnly=Footprint Ref|FieldType=1|ParameterName=[Footprint Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap32]
-Options=FieldName=Resistors.Footprint Path|TableNameOnly=Resistors|FieldNameOnly=Footprint Path|FieldType=1|ParameterName=[Footprint Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap33]
+[FieldMap27]
 Options=FieldName=Resistors.PCB3D Ref|TableNameOnly=Resistors|FieldNameOnly=PCB3D Ref|FieldType=1|ParameterName=[PCB3D Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap34]
+[FieldMap28]
 Options=FieldName=Resistors.PCB3D Path|TableNameOnly=Resistors|FieldNameOnly=PCB3D Path|FieldType=1|ParameterName=[PCB3D Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap35]
+[FieldMap29]
+Options=FieldName=Resistors.Library Path|TableNameOnly=Resistors|FieldNameOnly=Library Path|FieldType=1|ParameterName=[Library Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap30]
+Options=FieldName=Resistors.Footprint Ref|TableNameOnly=Resistors|FieldNameOnly=Footprint Ref|FieldType=1|ParameterName=[Footprint Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap31]
+Options=FieldName=Resistors.Footprint Path|TableNameOnly=Resistors|FieldNameOnly=Footprint Path|FieldType=1|ParameterName=[Footprint Path]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
+[FieldMap32]
 Options=FieldName=Resistors.Description|TableNameOnly=Resistors|FieldNameOnly=Description|FieldType=1|ParameterName=[Description]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
-[FieldMap36]
-Options=FieldName=Resistors.PkgCode|TableNameOnly=Resistors|FieldNameOnly=PkgCode|FieldType=1|ParameterName=PkgCode|VisibleOnAdd=True|AddMode=0|RemoveMode=0|UpdateMode=0

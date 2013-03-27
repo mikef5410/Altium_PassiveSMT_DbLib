@@ -1,0 +1,16 @@
+[ODBC]
+DRIVER=SQLite3 ODBC Driver
+BigInt=0
+LoadExt=
+OEMCP=0
+JournalMode=
+FKSupport=0
+NoWCHAR=0
+NoCreat=0
+LongNames=0
+ShortNames=0
+Timeout=1000
+NoTXN=0
+SyncPragma=NORMAL
+StepAPI=0
+Database=Z:\root\projects\MF_CAD\PassiveSMT\PassiveSMT.db
